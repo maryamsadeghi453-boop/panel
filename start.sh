@@ -1,20 +1,5 @@
-#!/usr/bin/env bash
+#!/bin/bash
+sed -i "s/Listen 80/Listen ${PORT:-80}/g" /etc/apache2/ports.conf
+sed -i "s/<VirtualHost \*:80>/<VirtualHost *:${PORT:-80}>/g" /etc/apache2/sites-available/000-default.conf
 
-ROLE="${ROLE:-all-in-one}"
-
-if [ "${ROLE}" = "node" ]; then
-    exec python node_worker.py
-elif [ "${ROLE}" = "scheduler" ]; then
-    exec python scheduler_worker.py
-else
-    echo "[$(date '+%Y-%m-%d %H:%M:%S')] Starting ${ROLE}..."
-    python -m alembic upgrade head
-    exit_code=$?
-
-    if [ $exit_code -ne 0 ]; then
-        echo "[$(date '+%Y-%m-%d %H:%M:%S')] ERROR: Database migrations failed"
-        exit 1
-    fi
-
-    exec python main.py
-fi
+apache2-foreground
