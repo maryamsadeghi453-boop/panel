@@ -1,12 +1,15 @@
-FROM php:8.1-apache
+FROM ubuntu:22.04
 
-RUN docker-php-ext-install pdo pdo_mysql mysqli
+RUN apt-get update && apt-get install -y \
+    apache2 \
+    php \
+    php-mysql \
+    php-pdo \
+    php-mysqli \
+    curl \
+    wget
+
 RUN a2enmod rewrite
-
-# غیرفعال کردن MPMهای اضافی
-RUN a2dismod mpm_event
-RUN a2dismod mpm_worker
-RUN a2enmod mpm_prefork
 
 COPY . /var/www/html/
 
